@@ -40,11 +40,10 @@ class DState extends EventEmitter {
           state,
           index: this.index
         }, tx, (err) => {
-          if (!err) {
-            this.state = clone(state)
-            this.index += 1
-          }
-          done(err)
+          if (err) return done(err)
+          this.state = clone(state)
+          this.index += 1
+          done(null, this.index)
         })
       })
     })
@@ -108,6 +107,7 @@ class DState extends EventEmitter {
           if (!found) return cb()
           tx.del(nKey(i), (err) => {
             if (err) return cb(err)
+            if (i === 0) return cb()
             next(i - 1)
           })
         })
