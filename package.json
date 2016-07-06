@@ -1,6 +1,6 @@
 {
   "name": "dstate",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Store changing state data as commits that can be rolled back",
   "main": "index.js",
   "scripts": {
