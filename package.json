@@ -1,0 +1,30 @@
+{
+  "name": "dstate",
+  "version": "0.0.0",
+  "description": "Store changing state data as commits that can be rolled back",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "state",
+    "change",
+    "history",
+    "commit",
+    "db",
+    "level",
+    "rollback",
+    "json"
+  ],
+  "author": "Matt Bell <mappum@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "clone": "^1.0.2",
+    "jsondiffpatch": "^0.1.43",
+    "level-transactions": "^1.5.3",
+    "msgpack-lite": "^0.1.20",
+    "old": "^0.1.3",
+    "pump": "^1.0.1",
+    "to2": "^1.0.0"
+  }
+}
