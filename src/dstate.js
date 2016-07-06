@@ -91,6 +91,31 @@ class DState extends EventEmitter {
     })
   }
 
+  prune (index, opts, cb) {
+    if (!cb) {
+      cb = opts
+      opts = {}
+    }
+    cb = cb || this._error.bind(this)
+    this._getTransaction(opts.tx, cb, (tx, cb) => {
+      if (index >= this.index - 1) {
+        return cb(new Error(
+          `Index must be less than current index (${this.index - 1})`))
+      }
+      var next = (i) => {
+        this._get(i, tx, (err, delta, found) => {
+          if (err) return cb(err)
+          if (!found) return cb()
+          tx.del(nKey(i), (err) => {
+            if (err) return cb(err)
+            next(i - 1)
+          })
+        })
+      }
+      next(index)
+    })
+  }
+
   getState (cb) {
     this.onceReady(() =>
       cb(null, clone(this.state)))
