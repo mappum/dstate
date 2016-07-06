@@ -5,8 +5,6 @@ const old = require('old')
 const { encode, decode } = require('msgpack-lite')
 const { diff, unpatch } = require('jsondiffpatch')
 const transaction = require('level-transactions')
-const to = require('to2').obj
-const pump = require('pump')
 const clone = require('clone')
 
 var dbOpts = { valueEncoding: 'binary' }
@@ -73,7 +71,7 @@ class DState extends EventEmitter {
         var next = (i) => {
           this._get(i, tx, (err, delta, found) => {
             if (err) return cb(err)
-            if (delta) unpatch(this.state, delta)
+            if (delta) this.state = unpatch(this.state, delta)
             tx.del(nKey(i), (err) => {
               if (err) return cb(err)
               if (i > index + 1) return next(i - 1)
@@ -86,7 +84,7 @@ class DState extends EventEmitter {
           this._put('state', {
             state: this.state,
             index: index + 1 },
-          tx, cb)
+          tx, (err) => cb(err, this.state))
         }
         next(this.index - 1)
       })
