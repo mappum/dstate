@@ -22,6 +22,7 @@ class DState extends EventEmitter {
     this.db = db
     this.state = null
     this.index = 0
+    this.pruned = 0
     this.ready = false
     this._init()
   }
@@ -82,8 +83,9 @@ class DState extends EventEmitter {
           this.index = index + 1
           this._put('state', {
             state: this.state,
-            index: index + 1 },
-          tx, (err) => cb(err, this.state))
+            index: index + 1,
+            pruned: this.pruned
+          }, tx, (err) => cb(err, this.state))
         }
         next(this.index - 1)
       })
@@ -101,18 +103,27 @@ class DState extends EventEmitter {
         return cb(new Error(
           `Index must be less than current index (${this.index - 1})`))
       }
-      var next = (i) => {
-        this._get(i, tx, (err, delta, found) => {
-          if (err) return cb(err)
-          if (!found) return cb()
-          tx.del(nKey(i), (err) => {
-            if (err) return cb(err)
-            if (i === 0) return cb()
-            next(i - 1)
-          })
+      if (index < this.pruned) return cb()
+      var remaining = index - this.pruned + 1
+      for (let i = this.pruned; i <= index; i++) {
+        tx.del(nKey(i), (err) => {
+          if (err) return done(err)
+          remaining -= 1
+          if (remaining === 0) done()
         })
       }
-      next(index)
+      var returned = false
+      var done = (err) => {
+        if (returned) return
+        returned = true
+        if (err) return cb(err)
+        this.pruned = index + 1
+        this._put('state', {
+          state: this.state,
+          index: this.index,
+          pruned: this.pruned
+        }, tx, cb)
+      }
     })
   }
 
@@ -148,6 +159,7 @@ class DState extends EventEmitter {
       if (found) {
         this.index = data.index
         this.state = data.state
+        this.pruned = data.pruned
       }
       this.ready = true
       this.emit('ready')
