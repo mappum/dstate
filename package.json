@@ -25,7 +25,7 @@
   "license": "MIT",
   "dependencies": {
     "clone": "^1.0.2",
-    "jsondiffpatch": "^0.1.43",
+    "jsondiffpatch": "mappum/jsondiffpatch",
     "level-transactions": "^1.5.3",
     "msgpack-lite": "^0.1.20",
     "old": "^0.1.3"
