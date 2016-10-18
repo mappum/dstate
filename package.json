@@ -24,7 +24,6 @@
   "author": "Matt Bell <mappum@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "clone": "^1.0.2",
     "jsondiffpatch": "mappum/jsondiffpatch",
     "level-transactions": "^1.5.3",
     "msgpack-lite": "^0.1.20",

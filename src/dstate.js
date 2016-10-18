@@ -5,7 +5,6 @@ const old = require('old')
 const { encode, decode } = require('msgpack-lite')
 const { diff, unpatch } = require('jsondiffpatch')
 const transaction = require('level-transactions')
-const clone = require('clone')
 
 var dbOpts = { valueEncoding: 'binary' }
 
@@ -42,7 +41,7 @@ class DState extends EventEmitter {
           index: this.index
         }, tx, (err) => {
           if (err) return done(err)
-          this.state = clone(state)
+          this.state = state
           this.index += 1
           done(null, this.index)
         })
@@ -129,7 +128,7 @@ class DState extends EventEmitter {
 
   getState (cb) {
     this.onceReady(() =>
-      cb(null, clone(this.state)))
+      cb(null, this.state))
   }
 
   getIndex (cb) {
